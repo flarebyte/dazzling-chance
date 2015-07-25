@@ -1,6 +1,6 @@
 {
   "name": "dazzling-chance",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "Number generator based on a text input with vague random properties",
   "homepage": "https://github.com/flarebyte/dazzling-chance",
   "author": {
