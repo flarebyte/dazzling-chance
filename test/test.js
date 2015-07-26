@@ -4,37 +4,90 @@ var assert = require('chai').assert;
 var dazzlingChance = require('../');
 
 var cfgWilde = {
-	text: "The only difference between the saint and the sinner is that every saint has a past, and every sinner has a future. (O.Wilde)"
+    text: "The only difference between the saint and the sinner is that every saint has a past, and every sinner has a future. (O.Wilde)",
+    characters: [{
+        chars: "0-9a-zA-Z ,().",
+        integer: 0
+    }],
+    resolution: 70
 };
 
-describe('dazzling-chance node module', function () {
-  it('must return the next char code', function () {
-    var chance = dazzlingChance(cfgWilde);
-    assert.equal(84,chance.nextCharCode());
-    assert.equal(104,chance.nextCharCode());
-    assert.equal(101,chance.nextCharCode());
-    assert.equal(32,chance.nextCharCode());
-    assert.equal(111,chance.nextCharCode());
-    assert.equal(110,chance.nextCharCode());
-  });
+describe('dazzling-chance node module', function() {
+    it('must return the next char', function() {
+        var chance = dazzlingChance(cfgWilde);
+        assert.equal('T', chance.nextChar());
+        assert.equal('h', chance.nextChar());
+        assert.equal('e', chance.nextChar());
+    });
 
-  it('must return the next max code', function () {
-    var chance = dazzlingChance(cfgWilde);
-    assert.equal(4,chance.nextMaxCode(10));
-    assert.equal(8,chance.nextMaxCode(16));
-  });
+    it('must return the next char code', function() {
+        var chance = dazzlingChance(cfgWilde);
+        assert.equal(55, chance.nextCharCode());
+        assert.equal(17, chance.nextCharCode());
+        assert.equal(14, chance.nextCharCode());
+        assert.equal(62, chance.nextCharCode());
+        assert.equal(24, chance.nextCharCode());
+        assert.equal(23, chance.nextCharCode());
+    });
 
-  it('must return the next unit ratio', function () {
-    var chance = dazzlingChance(cfgWilde);
-    assert.equal(0.84,chance.nextUnitRatio());
-    assert.equal(0.04,chance.nextUnitRatio());
-  });
+    it('must return the next max code', function() {
+        var chance = dazzlingChance(cfgWilde);
+        assert.equal(5, chance.nextMaxCode(10));
+        assert.equal(1, chance.nextMaxCode(16));
+    });
 
-  it('must return the next float', function () {
-    var chance = dazzlingChance(cfgWilde);
-    assert.equal(2.52,chance.nextFloat(0,3));
-    assert.equal(-9.2,chance.nextFloat(-10,10));
-    assert.equal(-0.98,chance.nextFloat(-1,1));
-    assert.equal(-0.36,chance.nextFloat(-1,1));
-  });
+    it('must expand the range', function() {
+        var chance = dazzlingChance(cfgWilde);
+        assert.equal('abc', chance.expandRange('abc'));
+        assert.equal('a-', chance.expandRange('a-'));
+        assert.equal('bcdef', chance.expandRange('b-f'));
+        assert.equal('abcdef1234', chance.expandRange('ab-f1-4'));
+    });
+
+    it('must return mapping', function() {
+        var chance = dazzlingChance({
+            text: "qwertyuopasdfghjklzxcvbnm",
+            characters: [{
+                chars: "a-z",
+                integer: 10
+            }]
+        });
+        assert.equal(10, chance.mapping['a']);
+        assert.equal(12, chance.mapping['c']);
+        assert.equal(35, chance.mapping['z']);
+    });
+
+    it('must return mapping with two rules', function() {
+        var chance = dazzlingChance({
+            text: "qwertyuopasdfghjklzxcvbnm",
+            characters: [{
+                chars: "a-z",
+                integer: 10
+            }, {
+                chars: "0-9",
+                integer: 0
+            }]
+        });
+        assert.equal(1, chance.mapping['1']);
+        assert.equal(5, chance.mapping['5']);
+        assert.equal(10, chance.mapping['a']);
+        assert.equal(12, chance.mapping['c']);
+        assert.equal(35, chance.mapping['z']);
+    });
+
+
+
+    it('must return the next unit ratio', function() {
+        var chance = dazzlingChance(cfgWilde);
+        assert.equal(0.7857142857142857, chance.nextUnitRatio());
+        assert.equal(0.24285714285714285, chance.nextUnitRatio());
+    });
+
+    it('must return the next float', function() {
+        var chance = dazzlingChance(cfgWilde);
+        assert.equal(2.357142857142857, chance.nextFloat(0, 3));
+        assert.equal(-5.142857142857143, chance.nextFloat(-10, 10));
+        assert.equal(-0.6, chance.nextFloat(-1, 1));
+        assert.equal(0.7714285714285714, chance.nextFloat(-1, 1));
+    });
 });
