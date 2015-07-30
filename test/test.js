@@ -35,11 +35,6 @@ describe('dazzling-chance node module', function() {
         assert.equal(23, chance.nextCharCode());
     });
 
-    it('must return the next max code', function() {
-        var chance = dazzlingChance(cfgWilde);
-        assert.equal(5, chance.nextMaxCode(10));
-        assert.equal(1, chance.nextMaxCode(16));
-    });
 
     it('must expand the range', function() {
         var chance = dazzlingChance(cfgWilde);
@@ -81,12 +76,6 @@ describe('dazzling-chance node module', function() {
     });
 
 
-
-    it('must return the next unit ratio', function() {
-        var chance = dazzlingChance(cfgWilde);
-        assert.equal(0.8208955223880597, chance.nextUnitRatio());
-    });
-
     it('must return the next float', function() {
         var chance = dazzlingChance(cfgWilde);
         assert.equal(2.463, chance.nextFloat(0, 3));
@@ -94,4 +83,37 @@ describe('dazzling-chance node module', function() {
         assert.equal(-0.582, chance.nextFloat(-1, 1));
         assert.equal(0.851, chance.nextFloat(-1, 1));
     });
+
+    it('must return the next int', function() {
+        var chance = dazzlingChance(cfgWilde);
+        assert.equal(2, chance.nextInt(0, 3));
+        assert.equal(-5, chance.nextInt(-10, 10));
+        assert.equal(-58, chance.nextInt(-100, 100));
+        assert.equal(85, chance.nextInt(-100, 100));
+    });
+
+    it('must return the next bool', function() {
+        var chance = dazzlingChance(cfgWilde);
+        assert.isTrue(chance.nextBool(), 'A');
+        assert.isFalse(chance.nextBool(), 'B');
+        assert.isFalse(chance.nextBool(), 'C');
+        assert.isTrue(chance.nextBool(), 'D');
+    });
+
+    it('must return the next string', function() {
+        var chance = dazzlingChance(cfgWilde);
+        assert.equal('d', chance.nextString(['a', 'b', 'c', 'd', 'e']), 'A');
+        assert.equal('b', chance.nextString(['a', 'b', 'c', 'd', 'e']), 'B');
+        assert.equal('b', chance.nextString(['a', 'b', 'c', 'd', 'e']), 'C');
+        assert.equal('e', chance.nextString(['a', 'b', 'c', 'd', 'e']), 'D');
+    });
+
+    it('must return the next number', function() {
+        var chance = dazzlingChance(cfgWilde);
+        assert.equal(68, chance.nextNumber([36, 47, 3, 68, 34]), 'A');
+        assert.equal(47, chance.nextNumber([36, 47, 3, 68, 34]), 'B');
+        assert.equal(47, chance.nextNumber([36, 47, 3, 68, 34]), 'C');
+        assert.equal(34, chance.nextNumber([36, 47, 3, 68, 34]), 'D');
+    });
+
 });

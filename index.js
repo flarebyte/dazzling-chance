@@ -12,7 +12,7 @@ var charSetSchema = Joi.object().keys({
 var cfgSchema = Joi.object().keys({
     text: Joi.string().min(20).required(),
     resolution: Joi.number().integer().min(2).max(127),
-    characters: Joi.array().min(1).items(charSetSchema)
+    characters: Joi.array().items(charSetSchema).min(1)
 });
 
 var rnd = function(value) {
@@ -76,13 +76,8 @@ module.exports = function(cfg) {
         return _.get(mapping, character, character.charCodeAt(0));
     };
 
-    var nextMaxCode = function(max) {
-        var i = nextCharCode();
-        return i % max;
-    };
-
     var nextUnitRatio = function() {
-        return nextMaxCode(resolution) / resolution;
+        return (nextCharCode() % resolution) / resolution;
     };
 
     var nextFloat = function(min, max) {
@@ -92,15 +87,40 @@ module.exports = function(cfg) {
         return rnd((nextUnitRatio() * diff) + min);
     };
 
+    var nextInt = function(min, max) {
+        Joi.assert(min, Joi.number().integer().max(max));
+        Joi.assert(max, Joi.number().integer().min(min));
+        var diff = max - min;
+        return Math.round((nextUnitRatio() * diff) + min);
+    };
+
+    var nextBool = function() {
+        return nextUnitRatio() > 0.5;
+    };
+
+    var nextString = function(stringList) {
+        Joi.assert(stringList, Joi.array().items(Joi.string().min(1)).min(2));
+        var ii = nextInt(0, stringList.length - 1);
+        return stringList[ii];
+    };
+
+    var nextNumber = function(numberList) {
+        Joi.assert(numberList, Joi.array().items(Joi.number().min(1)).min(2));
+        var ii = nextInt(0, numberList.length - 1);
+        return numberList[ii];
+    };
+
     var chance = {
         nextChar: nextChar,
         nextCharCode: nextCharCode,
-        nextMaxCode: nextMaxCode,
         expandRange: expandRange,
         mapping: _.clone(mapping),
         resolution: _.clone(resolution),
-        nextUnitRatio: nextUnitRatio,
-        nextFloat: nextFloat
+        nextFloat: nextFloat,
+        nextInt: nextInt,
+        nextBool: nextBool,
+        nextString: nextString,
+        nextNumber: nextNumber
     };
 
     return chance;
