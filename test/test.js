@@ -9,7 +9,6 @@ var cfgWilde = {
         chars: "0-9a-zA-Z ,().",
         integer: 0
     }],
-    resolution: 70
 };
 
 describe('dazzling-chance node module', function() {
@@ -18,6 +17,12 @@ describe('dazzling-chance node module', function() {
         assert.equal('T', chance.nextChar());
         assert.equal('h', chance.nextChar());
         assert.equal('e', chance.nextChar());
+    });
+
+    it('must return the next char', function() {
+        var chance = dazzlingChance(cfgWilde);
+        assert.equal(67, chance.resolution);
+
     });
 
     it('must return the next char code', function() {
@@ -79,15 +84,14 @@ describe('dazzling-chance node module', function() {
 
     it('must return the next unit ratio', function() {
         var chance = dazzlingChance(cfgWilde);
-        assert.equal(0.7857142857142857, chance.nextUnitRatio());
-        assert.equal(0.24285714285714285, chance.nextUnitRatio());
+        assert.equal(0.8208955223880597, chance.nextUnitRatio());
     });
 
     it('must return the next float', function() {
         var chance = dazzlingChance(cfgWilde);
-        assert.equal(2.357142857142857, chance.nextFloat(0, 3));
-        assert.equal(-5.142857142857143, chance.nextFloat(-10, 10));
-        assert.equal(-0.6, chance.nextFloat(-1, 1));
-        assert.equal(0.7714285714285714, chance.nextFloat(-1, 1));
+        assert.equal(2.463, chance.nextFloat(0, 3));
+        assert.equal(-4.925, chance.nextFloat(-10, 10));
+        assert.equal(-0.582, chance.nextFloat(-1, 1));
+        assert.equal(0.851, chance.nextFloat(-1, 1));
     });
 });
