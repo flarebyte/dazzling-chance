@@ -2,8 +2,7 @@
 var Joi = require('joi');
 var _ = require('lodash');
 var S = require('string');
-
-var DEFAULT_RESOLUTION = 100;
+var math = require('mathjs');
 
 var charSetSchema = Joi.object().keys({
     chars: Joi.string().min(1).required(),
@@ -15,6 +14,10 @@ var cfgSchema = Joi.object().keys({
     resolution: Joi.number().integer().min(2).max(127),
     characters: Joi.array().min(1).items(charSetSchema)
 });
+
+var rnd = function(value) {
+    return math.round(value, 3);
+};
 
 
 var expandRange = function(str) {
@@ -40,15 +43,15 @@ var expandRange = function(str) {
 module.exports = function(cfg) {
     Joi.assert(cfg, cfgSchema);
     var text = cfg.text;
-    var resolution = _.isUndefined(cfg.resolution) ? DEFAULT_RESOLUTION : cfg.resolution;
     var maxIdx = Joi.number().max(cfg.text.length - 1);
     var idx = -1;
-
+    var defaultResolution = 0;
     var createMapping = function() {
         var mapp = {};
 
         _.forEach(cfg.characters, function(charSet) {
             var expChars = expandRange(charSet.chars);
+            defaultResolution = defaultResolution + expChars.length;
             for (var i = expChars.length - 1; i >= 0; i--) {
                 mapp[expChars[i]] = charSet.integer + i;
             }
@@ -59,6 +62,7 @@ module.exports = function(cfg) {
     };
 
     var mapping = createMapping();
+    var resolution = _.isUndefined(cfg.resolution) ? defaultResolution : cfg.resolution;
 
     var nextChar = function() {
         idx++;
@@ -68,7 +72,8 @@ module.exports = function(cfg) {
     };
 
     var nextCharCode = function() {
-        return _.get(mapping, nextChar(), 100);
+        var character = nextChar();
+        return _.get(mapping, character, character.charCodeAt(0));
     };
 
     var nextMaxCode = function(max) {
@@ -84,9 +89,7 @@ module.exports = function(cfg) {
         Joi.assert(min, Joi.number().max(max));
         Joi.assert(max, Joi.number().min(min));
         var diff = max - min;
-        return (nextUnitRatio() * diff) + min;
-
-
+        return rnd((nextUnitRatio() * diff) + min);
     };
 
     var chance = {
@@ -95,6 +98,7 @@ module.exports = function(cfg) {
         nextMaxCode: nextMaxCode,
         expandRange: expandRange,
         mapping: _.clone(mapping),
+        resolution: _.clone(resolution),
         nextUnitRatio: nextUnitRatio,
         nextFloat: nextFloat
     };
